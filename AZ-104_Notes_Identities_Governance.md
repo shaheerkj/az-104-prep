@@ -147,5 +147,3 @@ Use **"Check access"** or **IAM → View my access** in the portal to see effect
 # Links:
 
 1. John Savill study cram - takes you through the entire study guide of AZ-104: https://www.youtube.com/watch?v=0Knf9nub4-k&list=PLlVtbbG169nGlGPWs9xaLKT1KfwqREHbs&index=30
-
-2. 
