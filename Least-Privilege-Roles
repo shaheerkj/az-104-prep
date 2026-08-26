@@ -1,0 +1,177 @@
+# AZ-104: Least Privilege RBAC Scenarios
+
+## 1. VM Restart Without Full Control
+
+A support technician needs to restart and monitor VMs. They must not be able to delete VMs or access disk data.
+
+**Options:**
+- Virtual Machine Contributor — too broad, allows delete and disk access
+- Contributor — too broad, covers all resource types
+- Custom role with `Microsoft.Compute/virtualMachines/restart/action`, `start/action`, `read` — correct
+- Reader — insufficient, cannot restart
+
+**Answer:** Custom role scoped to restart/start/read actions only.
+
+---
+
+## 2. Password Reset for Standard Users
+
+A helpdesk team resets passwords for standard users only. They must not manage admin accounts or group membership.
+
+**Options:**
+- User Administrator — too broad, can create/delete users and manage groups
+- Global Administrator — too broad
+- Password Administrator — correct
+- Helpdesk Administrator — broader than needed, includes some admin password resets
+
+**Answer:** Password Administrator.
+
+---
+
+## 3. Deploy Resources Without Managing Access
+
+A dev team creates and modifies resources in a resource group. They must not be able to grant others access.
+
+**Options:**
+- Owner — too broad, includes access management
+- Contributor — correct
+- User Access Administrator — wrong purpose, manages access only, not resources
+- Reader — insufficient, cannot deploy
+
+**Answer:** Contributor.
+
+---
+
+## 4. Blob Data Access Without Account Configuration
+
+An app team reads and writes blobs. They must not change firewall rules, redundancy settings, or access keys.
+
+**Options:**
+- Storage Account Contributor — manages account configuration, not blob data by default
+- Storage Blob Data Owner — too broad, includes ACL management
+- Storage Blob Data Contributor — correct
+- Contributor — too broad
+
+**Answer:** Storage Blob Data Contributor.
+
+---
+
+## 5. Read-Only Access for Auditors
+
+External auditors need to view resource configurations across a subscription. No changes, no data access.
+
+**Options:**
+- Reader — correct
+- Reader and Data Access — too broad, includes storage keys and SAS tokens
+- Contributor — too broad
+- Security Reader — narrower than required, limited to security data
+
+**Answer:** Reader.
+
+---
+
+## 6. Network Management Only
+
+A network team manages VNets, NSGs, and route tables across several resource groups. No compute or storage access.
+
+**Options:**
+- Contributor — too broad
+- Network Contributor — correct
+- Owner — too broad
+- Reader — insufficient, cannot modify resources
+
+**Answer:** Network Contributor, scoped to relevant resource groups or subscription.
+
+---
+
+## 7. Backup Management Without General VM Rights
+
+A backup admin configures and monitors backup jobs. They must not have general VM management rights.
+
+**Options:**
+- Contributor on the VM resource group — too broad
+- Virtual Machine Contributor — too broad, unrelated to backup scope
+- Backup Contributor — correct
+- Backup Reader — insufficient, cannot configure policies
+
+**Answer:** Backup Contributor, scoped to the Recovery Services vault.
+
+---
+
+## 8. Delegated Access Management for One Resource Group
+
+A project lead adds and removes team members' access, scoped to their own project's resource group only.
+
+**Options:**
+- Owner — too broad, includes full resource control
+- User Access Administrator — correct, scoped to the resource group
+- Contributor — wrong purpose, cannot manage access assignments
+- Role Based Access Control Administrator — viable alternative but broader in some environments than needed; User Access Administrator is the standard answer
+
+**Answer:** User Access Administrator, scoped to the resource group.
+
+---
+
+## 9. AKS Workload Deployment Without Cluster Admin
+
+A developer deploys and manages workloads inside an AKS cluster via kubectl. They must not manage cluster infrastructure or other users' access.
+
+**Options:**
+- Azure Kubernetes Service Cluster Admin Role — too broad, grants full admin kubeconfig access
+- Azure Kubernetes Service Contributor Role — manages the cluster resource itself, not workloads inside it
+- Azure Kubernetes Service RBAC Writer — correct, scoped to namespace if possible
+- Azure Kubernetes Service RBAC Reader — insufficient, view-only
+
+**Answer:** Azure Kubernetes Service RBAC Writer, scoped to namespace where possible.
+
+---
+
+## 10. Cost Visibility and Budget Management
+
+A finance stakeholder views spending and sets budgets and alerts. No visibility into resource configuration.
+
+**Options:**
+- Reader — insufficient, can view costs but cannot create budgets
+- Contributor — unrelated and over-privileged
+- Cost Management Contributor — correct
+- Cost Management Reader — insufficient, cannot create budgets
+
+**Answer:** Cost Management Contributor.
+
+---
+
+## 11. Key Vault Secrets Access Without Access Policy Control
+
+A CI/CD pipeline reads and writes secrets in Key Vault. It must not be able to change who else has access.
+
+**Options:**
+- Key Vault Contributor — management-plane role, can alter vault properties and access policies, not intended for data-plane secret operations
+- Key Vault Administrator — too broad, includes full data-plane and access control
+- Key Vault Secrets Officer — correct
+- Key Vault Secrets User — insufficient, read-only
+
+**Answer:** Key Vault Secrets Officer, using RBAC authorization mode on the vault.
+
+---
+
+## 12. Custom Role for a Single Non-Standard Action
+
+A team needs to deallocate VMs and view their status. No start, no create, no delete permission should exist.
+
+**Options:**
+- Virtual Machine Contributor — too broad
+- Reader — insufficient, cannot deallocate
+- Custom role built from Reader plus `Microsoft.Compute/virtualMachines/deallocate/action` — correct
+- Contributor — too broad
+
+**Answer:** Custom role, since no built-in role maps to this exact permission set.
+
+---
+
+## Pattern Summary
+
+Most least-privilege questions test one of three traps:
+
+1. A role that is a superset of what's needed (Contributor when Reader plus one action would do).
+2. Confusing control-plane roles with data-plane roles, especially in Storage and Key Vault.
+3. Forgetting that granting access to others requires User Access Administrator or Owner — Contributor alone cannot do it.
