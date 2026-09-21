@@ -1,0 +1,388 @@
+# AZ-900: Microsoft Azure Fundamentals — Study Guide (Explained)
+
+---
+
+# 1. Describe Cloud Concepts (25–30%)
+
+## 1.1 Describe Cloud Computing
+
+### What is cloud computing?
+Cloud computing means renting IT resources — servers, storage, databases, networking, software — from a provider (like Microsoft, with Azure) over the internet, instead of buying and running your own physical hardware. You pay for what you use, and the provider handles the physical datacenter, hardware maintenance, power, and cooling.
+
+Think of it like electricity: instead of building your own power plant, you plug into the grid and pay for what you consume. Cloud computing does the same for computing power.
+
+### The Shared Responsibility Model
+When you use cloud services, security and management responsibilities are **split between you and the cloud provider**. Who is responsible for what depends on the type of service:
+
+- **On-premises (your own datacenter):** You are responsible for everything — physical security, hardware, OS, network controls, applications, data.
+- **IaaS (Infrastructure as a Service):** Microsoft manages the physical infrastructure (datacenter, physical network, physical hosts). You manage the OS, applications, and data.
+- **PaaS (Platform as a Service):** Microsoft also manages the OS and runtime. You focus only on your application and data.
+- **SaaS (Software as a Service):** Microsoft manages almost everything. You're mainly responsible for your data and who has access to it.
+
+**Key rule:** No matter which model, **you always retain responsibility for your data, endpoints, accounts, and access management**. Microsoft never takes that away from you.
+
+### Cloud models: Public, Private, Hybrid
+- **Public cloud:** Resources are owned and operated by a third-party provider (Microsoft) and shared among multiple customers ("tenants") over the internet. No hardware to maintain, highly scalable, pay-as-you-go.
+  - *Use case:* Startups, SaaS apps, workloads with unpredictable demand — anyone who wants to avoid capital investment in hardware.
+- **Private cloud:** Cloud-like resources (self-service, scalable) but dedicated entirely to a single organization, often hosted in their own datacenter or a dedicated hosted environment.
+  - *Use case:* Government, banking, healthcare — organizations with strict regulatory, data sovereignty, or security requirements that public cloud can't satisfy.
+- **Hybrid cloud:** A combination — some resources on-premises/private, some in the public cloud, connected together.
+  - *Use case:* Gradual cloud migration, keeping sensitive data on-prem while bursting compute needs to the cloud, or legacy systems that can't yet move.
+
+There's also **multicloud** (using more than one public cloud provider, e.g., Azure + AWS) which isn't one of the three official models but is often mentioned for context.
+
+### Consumption-based model
+This is the "pay-as-you-go" idea at the heart of cloud economics:
+- You pay only for what you use, when you use it — no upfront hardware purchase.
+- **CapEx (Capital Expenditure)** → **OpEx (Operational Expenditure)**: instead of a big upfront cost (buying servers), cloud spending becomes an ongoing operating expense, like a utility bill.
+- Benefits: no guessing capacity needs in advance, ability to scale instantly, stop paying when you stop using.
+
+### Cloud pricing models (comparison)
+- **Pay-as-you-go:** Pay only for what you consume, no commitment — most flexible, but usually the most expensive per unit.
+- **Reserved capacity / Reserved Instances:** Commit to using a resource (e.g., a VM) for 1 or 3 years in exchange for a significant discount (up to ~70%+). Good for stable, predictable workloads.
+- **Spot pricing:** Buy unused Azure capacity at a steep discount, but Azure can reclaim it with little notice when it needs the capacity back. Good for interruptible, flexible workloads (batch jobs, testing).
+
+### Serverless computing
+"Serverless" doesn't mean no servers — it means **you don't manage the servers**. Microsoft handles provisioning, scaling, and infrastructure automatically; you just deploy code.
+- Example: **Azure Functions** — you write a small piece of code that runs in response to an event (an HTTP request, a file upload, a timer), and you're billed only for the compute time actually used (often per execution, per millisecond).
+- Great for event-driven, unpredictable, or intermittent workloads where you don't want to pay for idle servers.
+
+---
+
+## 1.2 Describe the Benefits of Using Cloud Services
+
+### High availability & scalability
+- **High availability (HA):** The cloud is designed to keep applications running and accessible with minimal downtime, using redundancy (multiple copies of data/resources across zones/regions) — Azure offers Service Level Agreements (SLAs) promising uptime percentages (e.g., 99.9%).
+- **Scalability:** The ability to increase or decrease resources to match demand.
+  - **Vertical scaling (scale up/down):** Add or remove power (CPU/RAM) to an existing resource.
+  - **Horizontal scaling (scale out/in):** Add or remove entire instances (more VMs) to handle load — this is the classic "cloud" way to scale, since it can happen automatically and near-instantly.
+
+### Reliability & predictability
+- **Reliability:** The system recovers from failures and continues to function — built through redundancy and failover across datacenters/regions.
+- **Predictability:** Being able to plan for both **performance** (resources behave consistently and can scale to meet demand) and **cost** (accurate cost forecasting via pricing/cost management tools, budgets, and alerts).
+
+### Security & governance
+- Azure provides built-in security tools (encryption, network security, identity protection) so you don't have to build all of this yourself.
+- **Governance** = the policies and controls that ensure resources are compliant with organizational and legal standards (e.g., Azure Policy, RBAC, resource locks — covered later).
+
+### Manageability
+Cloud makes it easier to manage resources in two ways:
+- **Management of the cloud:** Auto-scaling, self-healing/auto-monitoring, deploying resources quickly.
+- **Management in the cloud:** Managing resources via the web portal, CLI, PowerShell, REST APIs, and mobile apps — from anywhere.
+
+---
+
+## 1.3 Describe Cloud Service Types
+
+### IaaS (Infrastructure as a Service)
+You rent the raw infrastructure — virtual machines, storage, networking — and manage everything above that (OS, runtime, apps, data) yourself.
+- **Most control, most responsibility.**
+- *Use case:* Lift-and-shift migration of an existing on-prem app to the cloud without redesigning it; when you need full control over the OS.
+- Example: Azure Virtual Machines.
+
+### PaaS (Platform as a Service)
+Microsoft manages the underlying infrastructure AND the OS/runtime. You just deploy your application code and manage your data.
+- **Balanced control** — you focus on building the app, not maintaining servers.
+- *Use case:* Developers who want to build and deploy apps quickly without worrying about patching servers or configuring runtimes.
+- Example: Azure App Service, Azure SQL Database.
+
+### SaaS (Software as a Service)
+A complete, ready-to-use application delivered over the internet. Microsoft manages literally everything except your data and user access.
+- **Least control, least responsibility** — you just use the software.
+- *Use case:* End users who need a working application immediately (email, office productivity, CRM).
+- Example: Microsoft 365, Outlook on the web.
+
+### Quick comparison
+| Type | You manage | Provider manages | Example |
+|---|---|---|---|
+| IaaS | OS, runtime, apps, data | Physical infra, virtualization | Azure VMs |
+| PaaS | Apps, data | OS, runtime, infra | Azure App Service |
+| SaaS | Data, user access | Everything else | Microsoft 365 |
+
+---
+
+# 2. Describe Azure Architecture and Services (35–40%)
+
+## 2.1 Core Architectural Components of Azure
+
+### Regions, region pairs, and sovereign regions
+- **Region:** A geographic area containing one or more datacenters (e.g., "East US", "West Europe"). You deploy most resources into a specific region.
+- **Region pair:** Each Azure region is paired with another region at least 300 miles away within the same geography, for disaster recovery — if one region has an outage, Microsoft prioritizes recovery of at least one region in every pair, and updates are rolled out to paired regions at different times to reduce the risk of a bad update affecting both.
+- **Sovereign regions:** Isolated instances of Azure for regulatory/compliance reasons, physically and logically separate from the main Azure cloud — used by specific government or highly regulated entities (e.g., Azure Government in the US, Azure China operated by 21Vianet).
+
+### Availability zones
+Physically separate locations *within* a region, each with independent power, cooling, and networking. There are at least 3 zones per enabled region.
+- Deploying across availability zones protects against a datacenter-level failure (fire, power outage) while keeping low latency since they're still in the same region.
+- **Zonal vs zone-redundant services:** Some services let you pin a resource to a specific zone (zonal); others automatically replicate across zones for you (zone-redundant).
+
+### Azure datacenters
+The physical buildings — with servers, storage, networking equipment — that make up a region. Multiple datacenters can exist in a single availability zone, and Microsoft doesn't publicly disclose their exact number/locations for security reasons.
+
+### Resources and resource groups
+- **Resource:** Any single manageable item in Azure — a VM, a database, a storage account, a virtual network, etc.
+- **Resource group:** A logical container that holds related resources for a solution. Every resource must belong to exactly one resource group. This makes it easy to manage, deploy, and delete a group of resources together (e.g., delete the resource group and everything inside it goes away).
+
+### Subscriptions
+A subscription is a billing and access-control boundary. It:
+- Links to an Azure account and a payment method.
+- Sets usage limits/quotas.
+- Groups resources for billing purposes.
+- Organizations often use multiple subscriptions to separate environments (e.g., dev vs. prod) or departments.
+
+### Management groups
+A level **above** subscriptions used to organize and apply governance (policies, RBAC) across multiple subscriptions at once — useful for large organizations that need to manage many subscriptions consistently.
+
+### The hierarchy (top to bottom)
+```
+Management Groups
+      ↓
+  Subscriptions
+      ↓
+  Resource Groups
+      ↓
+    Resources
+```
+Settings like policies and access applied at a higher level (e.g., management group) flow down to everything beneath it — this is how Azure lets you govern at scale.
+
+---
+
+## 2.2 Azure Compute and Networking Services
+
+### Compute types: containers, VMs, and functions
+- **Virtual Machines (VMs):** Full emulation of a computer, including the OS — most control and most management overhead (IaaS). Use when you need full OS-level control or are migrating an existing workload.
+- **Containers:** Lightweight, portable packages of an app and its dependencies that share the host OS kernel (unlike VMs, which each have their own OS). Faster to start, more efficient, more portable. Managed via **Azure Container Instances** (simple, single containers) or **Azure Kubernetes Service (AKS)** (orchestration at scale).
+- **Functions (serverless):** Smallest unit — just your code, triggered by events, with automatic scaling and billing per execution. Use for short, event-driven tasks.
+
+**General rule of thumb:** VMs = most control/most overhead; Containers = middle ground (portable, efficient); Functions = least management, most "serverless."
+
+### Virtual machine options
+- **Azure Virtual Machines:** Individual on-demand, scalable IaaS VMs.
+- **Virtual Machine Scale Sets (VMSS):** Lets you deploy and manage a group of identical, load-balanced VMs that can automatically scale in/out based on demand or a schedule.
+- **Availability sets:** A logical grouping of VMs within a datacenter that protects against hardware failures by spreading VMs across:
+  - **Fault domains** (separate physical hardware/power/network racks), and
+  - **Update domains** (groups of VMs that can be rebooted/patched at the same time, so not all VMs go down together during maintenance).
+- **Azure Virtual Desktop:** A desktop and app virtualization service — lets users access a full Windows desktop and apps remotely from any device, hosted in Azure (virtual desktop infrastructure, or VDI, in the cloud).
+
+### Resources required for VMs
+When you create a VM you need to define/attach:
+- Size (CPU, RAM, based on the VM "SKU"/series)
+- Storage (OS disk + optional data disks)
+- Networking (virtual network, subnet, network interface, public/private IP, network security group)
+- The OS image (Windows/Linux)
+
+### Application hosting options
+- **Web Apps (Azure App Service):** PaaS — fastest way to host a web app/API without managing infrastructure; built-in scaling, deployment slots, custom domains.
+- **Containers:** Use when you want portability, microservices architecture, or consistency across environments.
+- **Virtual Machines:** Use when you need full control of the OS or are hosting something that doesn't fit a PaaS model.
+
+### Virtual networking
+- **Azure Virtual Network (VNet):** The fundamental building block for private networking in Azure — lets Azure resources securely communicate with each other, the internet, and on-prem networks.
+- **Subnets:** Segments within a VNet used to organize and secure resources (e.g., separate subnet for web tier vs. database tier).
+- **Peering:** Connects two VNets together so resources in each can communicate directly using private IP addresses, as if they were in the same network — traffic stays on the Microsoft backbone (not over the public internet).
+- **Azure DNS:** A hosting service for DNS domains, providing name resolution using Microsoft's infrastructure.
+- **Azure VPN Gateway:** Sends encrypted traffic between an Azure VNet and an on-premises location (or another VNet) over the **public internet**.
+- **ExpressRoute:** A **private, dedicated** connection from on-premises infrastructure into Azure that does *not* go over the public internet — offers higher reliability, faster speed, lower latency, and enhanced security compared to VPN Gateway. Costs more.
+
+### Public and private endpoints
+- **Public endpoint:** A publicly accessible IP address/DNS name — reachable over the internet.
+- **Private endpoint:** A network interface that uses a private IP address from your VNet, letting you connect privately and securely to a service (like a storage account or database) without exposing it to the public internet.
+
+---
+
+## 2.3 Azure Storage Services
+
+### Compare Azure Storage services
+Azure Storage is a group of services under one "storage account," including:
+- **Blob storage:** Unstructured data — documents, images, video, backups, log files. The core object storage service.
+- **File storage (Azure Files):** Fully managed file shares accessible via the standard **SMB/NFS protocols** — like a cloud version of a network file share, can be mounted on-prem or in the cloud.
+- **Queue storage:** Stores and retrieves messages to enable asynchronous communication between application components.
+- **Table storage / Azure Table:** NoSQL key-value store for structured, non-relational data.
+- **Disk storage:** Persistent, durable disks (managed disks) used as the storage for VMs.
+
+### Storage tiers (for Blob storage)
+Tiers balance **cost vs. access speed**, based on how often data is accessed:
+- **Hot tier:** Frequently accessed data — highest storage cost, lowest access cost.
+- **Cool tier:** Infrequently accessed, stored for at least 30 days — lower storage cost, higher access cost than hot.
+- **Cold tier:** Rarely accessed, stored for at least 90 days — even lower storage cost.
+- **Archive tier:** Rarely accessed, stored for at least 180 days — lowest storage cost, but data must be "rehydrated" (which can take hours) before you can read it; offline tier.
+
+### Redundancy options
+How many copies of your data are kept, and where, to protect against failure:
+- **LRS (Locally Redundant Storage):** 3 copies within a single datacenter. Cheapest, protects against hardware failure only.
+- **ZRS (Zone-Redundant Storage):** 3 copies across different availability zones in the same region. Protects against a datacenter-level outage.
+- **GRS (Geo-Redundant Storage):** Copies data to a secondary, paired region (in addition to LRS in the primary region) — protects against a regional outage. Data in the secondary region is not readable unless a failover happens (unless using RA-GRS).
+- **RA-GRS (Read-Access Geo-Redundant Storage):** Same as GRS, but you can also *read* from the secondary region at any time.
+- **GZRS / RA-GZRS:** Combines zone redundancy in the primary region with geo-redundancy to a secondary region (with RA-GZRS also allowing read access to the secondary).
+
+### Storage account options and storage types
+A **storage account** is the top-level container for all your storage services (blob, file, queue, table). Types include:
+- **Standard general-purpose v2:** Default, supports all storage types, HDD-based, most common.
+- **Premium:** SSD-based, for high-performance, low-latency scenarios (e.g., premium block blobs, premium file shares, premium page blobs for VM disks).
+
+### Options for moving files
+- **AzCopy:** Command-line tool for high-performance copying of data to/from Azure Storage.
+- **Azure Storage Explorer:** A standalone GUI app (Windows/Mac/Linux) for managing/browsing/uploading Azure Storage content.
+- **Azure File Sync:** Synchronizes on-premises file server data with Azure Files, allowing you to cache frequently used files locally while tiering the rest to the cloud.
+
+### Migration options
+- **Azure Migrate:** A hub of tools to discover, assess, and migrate on-premises servers, databases, and workloads to Azure.
+- **Azure Data Box:** A physical, ruggedized storage device Microsoft ships to you — you load your data onto it locally and ship it back to Microsoft, who uploads it to Azure. Used for very large data transfers where uploading over the internet would take too long.
+
+---
+
+## 2.4 Azure Identity, Access, and Security
+
+### Directory services
+- **Microsoft Entra ID** (formerly Azure Active Directory): Microsoft's cloud-based identity and access management service — manages users, groups, and authentication for Azure and other cloud apps (like Microsoft 365).
+- **Microsoft Entra Domain Services:** Provides managed domain services (like traditional on-prem Active Directory Domain Services — domain join, group policy, LDAP, Kerberos/NTLM authentication) **without** you having to deploy, manage, or patch domain controllers yourself.
+
+### Authentication methods
+- **Single sign-on (SSO):** Log in once and get access to multiple applications without re-entering credentials each time.
+- **Multifactor authentication (MFA):** Requires two or more verification methods (something you know [password] + something you have [phone/app] or something you are [biometric]) — greatly increases security over passwords alone.
+- **Passwordless authentication:** Removes the password entirely — e.g., Windows Hello, Microsoft Authenticator app, or FIDO2 security keys, relying on biometrics or possession of a device instead.
+
+### External identities
+Lets you interact securely with users **outside** your organization (partners, customers):
+- **B2B (Business to Business) collaboration:** Invite external users to sign in with their own credentials to access your resources.
+- **B2C (Business to Consumer):** Lets you build customer-facing apps where external users sign up/sign in using their own identities (social logins, email, etc.).
+
+### Microsoft Entra Conditional Access
+A tool that enforces access rules based on **signals** (who the user is, their location, device, application, risk level) — e.g., "require MFA if signing in from outside the corporate network" or "block access from certain countries." It's the "if-then" logic layer of access control: IF these conditions are met, THEN allow/block/require extra verification.
+
+### Azure role-based access control (RBAC)
+Controls **what actions** a user/group/app can perform on **which Azure resources**, using:
+- **Security principal** (who — user, group, service principal)
+- **Role definition** (what — a collection of permissions, e.g., "Reader," "Contributor," "Owner")
+- **Scope** (where — management group, subscription, resource group, or individual resource)
+
+This follows the **principle of least privilege** — give only the access needed, nothing more. RBAC is *additive* (you grant permissions, you don't need to deny by default).
+
+### Zero Trust
+A security model based on the principle **"never trust, always verify."** Instead of assuming everything inside a corporate network is safe, every request is verified as though it originates from an open, untrusted network. Three core principles:
+1. **Verify explicitly** — always authenticate/authorize based on all available data points.
+2. **Use least privilege access** — limit access with just-in-time and just-enough-access.
+3. **Assume breach** — minimize blast radius, segment access, use analytics to detect threats.
+
+### Defense-in-depth
+A layered security strategy — instead of relying on one control, you stack multiple layers so if one fails, others still protect you. The typical layers (outside-in):
+```
+Physical security → Identity & access → Perimeter → Network → Compute → Application → Data
+```
+Data sits at the center because that's usually the ultimate thing you're protecting.
+
+### Microsoft Defender for Cloud
+A unified security management tool that:
+- **Assesses** your security posture across Azure (and hybrid/multicloud) resources — gives a "Secure Score."
+- **Protects** with recommendations to harden resources.
+- **Defends** against active threats with advanced threat protection/alerts across workloads (servers, storage, containers, databases, etc.).
+
+---
+
+# 3. Describe Azure Management and Governance (30–35%)
+
+## 3.1 Cost Management in Azure
+
+### Factors that affect cost
+- **Resource type, size, and settings** (bigger VM = more cost).
+- **Region** (prices differ by region due to local costs).
+- **Usage/consumption** — how much and how long resources run.
+- **Bandwidth** — data transfer, especially **outbound** data (egress) is often charged; inbound is usually free.
+- **Licensing/subscription type.**
+
+### Pricing calculator
+The **Azure Pricing Calculator** (a free web tool) lets you estimate the cost of Azure services before deploying them, by selecting services, regions, and configurations — useful for budgeting and comparing options.
+
+(There's also the **Total Cost of Ownership (TCO) Calculator**, which compares the cost of running workloads on-premises vs. in Azure.)
+
+### Cost management capabilities
+**Microsoft Cost Management** tools let you:
+- Monitor and analyze spending across subscriptions.
+- Set **budgets** with alerts when spending approaches/exceeds a threshold.
+- Get **cost analysis** views/reports to understand where money is going.
+- Get recommendations to **reduce costs** (e.g., resize or shut down underused resources).
+
+### Purpose of tags
+**Tags** are name/value pairs you attach to resources (e.g., `Environment: Production`, `Department: Finance`) to:
+- Organize resources logically across resource groups.
+- Enable **cost reporting/filtering** by tag (e.g., see total spend per department).
+- Help with automation and resource management at scale.
+
+---
+
+## 3.2 Governance and Compliance Tools
+
+### Microsoft Purview
+A unified data governance service that helps you **discover, catalog, classify, and protect** data across your organization (on-prem, multicloud, SaaS) — gives visibility into where sensitive data lives and helps ensure compliance.
+
+### Azure Policy
+A service that lets you create, assign, and enforce **rules** ("policies") over your resources to ensure compliance with organizational standards — e.g., "only allow VMs of a certain size," or "require a tag on every resource." Non-compliant resources can be flagged, or Azure Policy can even **automatically prevent** their creation ("deny" effect) or fix them ("modify"/"deployIfNotExists" effect).
+- Note: Policy controls **what configurations resources can have**; this is different from RBAC, which controls **who can do what**.
+
+### Resource locks
+A setting that prevents accidental deletion or modification of a resource, regardless of RBAC permissions. Two types:
+- **CanNotDelete (Delete lock):** Users can still read/modify the resource, but can't delete it.
+- **ReadOnly:** Users can only read the resource — no modifying or deleting.
+Locks apply to everyone, even resource Owners, until the lock itself is removed — very useful for critical production resources.
+
+---
+
+## 3.3 Tools for Managing and Deploying Azure Resources
+
+### Azure portal
+A web-based, graphical user interface (GUI) for creating, managing, and monitoring Azure resources — the visual "point and click" way to work with Azure. Customizable dashboards, accessible from any browser.
+
+### Azure Cloud Shell, Azure CLI, Azure PowerShell
+- **Azure CLI:** Cross-platform command-line tool using standard command syntax (e.g., `az vm create`) — great for scripting and automation, especially in Bash-style workflows.
+- **Azure PowerShell:** Command-line tool using PowerShell **cmdlets** (e.g., `New-AzVM`) — deeply integrated with Windows/PowerShell scripting environments.
+- **Azure Cloud Shell:** A **browser-based**, authenticated shell environment (accessible right from the Azure portal) that has both Azure CLI and Azure PowerShell pre-installed — no local setup needed, and it persists your files in a mounted storage account.
+
+### Azure Arc
+Extends Azure management to resources **outside** Azure — on-premises servers, other clouds (AWS, GCP), or edge devices. It lets you apply Azure governance, monitoring, and management tools (like Azure Policy, RBAC, Defender for Cloud) to non-Azure resources as if they were Azure resources — a "single pane of glass" for hybrid/multicloud environments.
+
+### Infrastructure as Code (IaC)
+The practice of managing and provisioning infrastructure through **machine-readable definition files** (code) rather than manual configuration through a UI. Benefits:
+- Consistent, repeatable deployments.
+- Version-controlled infrastructure (like application code).
+- Faster, less error-prone than manual clicking.
+
+### Azure Resource Manager (ARM) and ARM templates
+- **Azure Resource Manager (ARM):** The **deployment and management layer** underlying all of Azure — every action you take (via portal, CLI, PowerShell, or SDKs) goes through ARM, which translates it into actual resource operations. It's what enforces consistent management, RBAC, tagging, etc.
+- **ARM templates:** JSON (or Bicep, a simpler DSL that compiles to ARM JSON) files that declaratively define what resources to deploy and their configuration — an implementation of Infrastructure as Code for Azure. You describe your desired end state, and ARM figures out how to get there (creates, updates, or leaves resources as needed).
+
+---
+
+## 3.4 Monitoring Tools in Azure
+
+### Azure Advisor
+A free, personalized recommendation engine that analyzes your resource configuration and usage, then suggests best practices across five pillars:
+- **Cost**, **Security**, **Reliability**, **Operational Excellence**, and **Performance**.
+
+### Azure Service Health
+Provides personalized information about the **health of Azure services** that affect **you specifically** (not just general status). Has three components:
+- **Azure Status:** Global, public view of overall Azure service health (any outages affecting Azure broadly).
+- **Service Health:** Personalized alerts/guidance about service issues, planned maintenance, and health advisories that affect the resources/regions *you* use.
+- **Resource Health:** Shows the health of your *individual* resources (e.g., "this specific VM is unavailable") and helps you diagnose if an issue is on Microsoft's side or your own configuration.
+
+### Azure Monitor
+The umbrella platform for collecting, analyzing, and acting on telemetry (metrics and logs) from your Azure (and hybrid) resources. Key components:
+- **Log Analytics:** A tool/workspace for querying and analyzing collected log data using the **Kusto Query Language (KQL)** — lets you dig deep into logs across resources.
+- **Azure Monitor Alerts:** Proactively notifies you (email, SMS, webhook, etc.) or triggers automated actions when conditions are met (e.g., CPU usage exceeds 90%).
+- **Application Insights:** An Application Performance Management (APM) tool — monitors live applications, detects performance anomalies, tracks usage patterns, and helps diagnose issues in your app code.
+
+---
+
+## Quick-Reference Summary Table
+
+| Domain | Weight | Core Idea |
+|---|---|---|
+| Cloud Concepts | 25–30% | What cloud computing is, why it's beneficial, and the IaaS/PaaS/SaaS spectrum |
+| Azure Architecture & Services | 35–40% | Physical/logical structure of Azure, compute, networking, storage, identity & security |
+| Azure Management & Governance | 30–35% | Cost control, compliance/policy, deployment tools, monitoring |
+
+## Notes / Progress Tracker
+
+| Section | Status | Notes |
+|---|---|---|
+| 1. Cloud Concepts | ☐ | |
+| 2. Azure Architecture & Services | ☐ | |
+| 3. Azure Management & Governance | ☐ | |
